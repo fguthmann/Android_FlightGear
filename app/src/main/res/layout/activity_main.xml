@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFF"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Ip address -->
+    <EditText
+        android:id="@+id/IP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="IP:  "
+        android:textColorHint="@color/teal_700"
+        android:layout_centerHorizontal="true"
+        android:imeOptions="actionDone"/>
+
+    <!-- Port -->
+    <EditText
+        android:id="@+id/Port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/IP"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:hint="Port:  "
+        android:inputType="textPersonName"
+        android:textColorHint="@color/teal_700"
+        android:imeOptions="actionDone"/>
+
+    <!-- Connection -->
+    <Button
+        android:id="@+id/Connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Port"
+        android:layout_centerHorizontal="true"
+        android:onClick="clickConnect"
+        android:text="Connect"
+        app:backgroundTint="#009688" />
+
+    <!-- Joystick -->
+    <RelativeLayout
+        android:id="@+id/layout_joystick"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/Connect"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:background="@drawable/image_button">
+
+
+    </RelativeLayout>
+
+    <!-- Rudder -->
+    <TextView
+        android:id="@+id/textRudder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rudder"
+        android:layout_below="@id/Rudder"
+        android:layout_marginTop="0dp"
+        android:layout_centerHorizontal="true"/>
+
+    <SeekBar
+        android:id="@+id/Rudder"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_joystick"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:rotation="180" />
+
+    <!-- Throttle -->
+    <TextView
+        android:id="@+id/textThrottle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/Throttle"
+        android:layout_alignTop="@id/Throttle"
+        android:layout_marginLeft="60dp"
+        android:rotation="90"
+        android:text="Throttle" />
+
+    <SeekBar
+        android:id="@+id/Throttle"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/layout_joystick"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="-70dp"
+        android:layout_marginTop="90dp"
+        android:rotation="270"
+        android:visibility="visible" />
+
+    <!-- Aileron -->
+    <TextView
+        android:id="@+id/textAileron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aileron"
+        android:layout_above="@id/Aileron"
+        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"/>
+    <SeekBar
+        android:id="@+id/Aileron"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/layout_joystick"
+        android:layout_marginTop="-30dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Elevator -->
+
+    <TextView
+        android:id="@+id/textElevator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/Elevator"
+        android:layout_alignTop="@id/Elevator"
+        android:layout_marginRight="60dp"
+        android:cursorVisible="true"
+        android:rotation="90"
+        android:text="Elevator" />
+
+    <SeekBar
+        android:id="@+id/Elevator"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/layout_joystick"
+        android:layout_alignRight="@id/layout_joystick"
+        android:layout_marginTop="90dp"
+        android:layout_marginRight="-128dp"
+        android:fadeScrollbars="true"
+        android:rotation="90" />
+
+
+</RelativeLayout>
