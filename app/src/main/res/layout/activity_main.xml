@@ -142,5 +142,21 @@
         android:fadeScrollbars="true"
         android:rotation="90" />
 
+    <!-- Show value of elevator and aileron-->
+    <TextView
+        android:id="@+id/x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@id/Connect"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:id="@+id/y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@id/x"
+        android:layout_centerHorizontal="true"/>
+
 
 </RelativeLayout>

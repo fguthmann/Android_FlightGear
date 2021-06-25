@@ -23,13 +23,14 @@ public class MainActivity extends AppCompatActivity {
 
     RelativeLayout layout_joystick;
     SeekBar rudder, aileron, throttle, elevator;
-    TextView txt_rudder, txt_aileron, txt_throttle, txt_elevator;
+    TextView txt_rudder, txt_aileron, txt_throttle, txt_elevator,  x, y;
     EditText ip, port;
     Button buttonConnect;
     Joystick js;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Initialization of sliders and their name
         rudder=(SeekBar)findViewById(R.id.Rudder);
         txt_rudder = (TextView)findViewById(R.id.textRudder);
         aileron=(SeekBar)findViewById(R.id.Aileron);
@@ -38,11 +39,16 @@ public class MainActivity extends AppCompatActivity {
         txt_elevator = (TextView)findViewById(R.id.textElevator);
         throttle=(SeekBar)findViewById(R.id.Throttle);
         txt_throttle = (TextView)findViewById(R.id.textThrottle);
+        // Initialization of ip and port and button connect
         ip = (EditText)findViewById(R.id.IP);
         port = (EditText)findViewById(R.id.Port);
         buttonConnect =(Button)findViewById(R.id.Connect);
+        // Initialization joystick
         layout_joystick = (RelativeLayout)findViewById(R.id.layout_joystick);
         js = new Joystick(getApplicationContext(), layout_joystick, R.drawable.image_button);
+        // Show value of aileron and elevator when joystick moved
+        x = (TextView)findViewById(R.id.x);
+        y = (TextView)findViewById(R.id.y);
 
 
         //Determine size of internal button
@@ -66,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         rudder.incrementProgressBy(1);
         rudder.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
+            // Show value of the seekbar rudder
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
@@ -91,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         throttle.incrementProgressBy(1);
         throttle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
+            // Show value of the seekbar throttle
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
@@ -115,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         aileron.setProgress(1000);
         aileron.incrementProgressBy(1);
         aileron.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-
+            // Show value of the seekbar aileron
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
@@ -141,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         elevator.incrementProgressBy(1);
         elevator.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
+            // Show value of the seekbar elevator
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
@@ -172,39 +181,35 @@ public class MainActivity extends AppCompatActivity {
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
 
+                    // Get value of aileron and elevator as string
+                    String str_aileron = js.getAileron();
+                    String str_elevator = js.getElevator();
+                    // Show the user the value of aileron and elevator
+                    x.setText("Aileron : " + str_aileron);
+                    y.setText("Elevator : " + str_elevator);
+                    // Put the seekbar of aileron and elevator to the right value
+                    double value_aileron = (Double.parseDouble(str_aileron) + 10) * 100;
+                    aileron.setProgress((int)value_aileron);
+                    double value_elevator = (Double.parseDouble(str_elevator) + 10) * 100;
+                    elevator.setProgress((int)value_elevator);
 
-                    int direction = js.get8Direction();
-                    if(direction == Joystick.STICK_UP) {
-                        //  textView5.setText("Direction : Up");
-                    } else if(direction == Joystick.STICK_UPRIGHT) {
-                        // textView5.setText("Direction : Up Right");
-                    } else if(direction == Joystick.STICK_RIGHT) {
-                        //  textView5.setText("Direction : Right");
-                    } else if(direction == Joystick.STICK_DOWNRIGHT) {
-                        // textView5.setText("Direction : Down Right");
-                    } else if(direction == Joystick.STICK_DOWN) {
-                        // textView5.setText("Direction : Down");
-                    } else if(direction == Joystick.STICK_DOWNLEFT) {
-                        //   textView5.setText("Direction : Down Left");
-                    } else if(direction == Joystick.STICK_LEFT) {
-                        //  textView5.setText("Direction : Left");
-                    } else if(direction == Joystick.STICK_UPLEFT) {
-                        //  textView5.setText("Direction : Up Left");
-                    } else if(direction == Joystick.STICK_NONE) {
-                        //   textView5.setText("Direction : Center");
-                    }
+                    // Send aileron and elevator to model
+
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
-                    //  textView1.setText("X :");
-                    //textView2.setText("Y :");
-                    //textView3.setText("Angle :");
-                    //textView4.setText("Distance :");
-                    //textView5.setText("Direction :");
+                    // Everything return to be 0 when the joystick is not touch
+                    x.setText("Aileron : 0");
+                    y.setText("Elevator : 0");
+                    aileron.setProgress(0);
+                    elevator.setProgress(0);
+
+
                 }
                 return true;
             }
         });
     }
 
+    // Connect button has been click, and ip and port are send
     public void clickConnect(View view) {
         String ipInput = ip.getText().toString().trim();
         String portInput = port.getText().toString().trim();
