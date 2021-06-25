@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 
 import ex3_2.com.View.Joystick;
+import ex3_2.com.Model.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     EditText ip, port;
     Button buttonConnect;
     Joystick js;
+    SimulatorCommunicator client;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -50,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         x = (TextView)findViewById(R.id.x);
         y = (TextView)findViewById(R.id.y);
 
+        client = new SimulatorCommunicator();
+        client.AddAttribute("aileron[0]", "0");
+        client.AddAttribute("rudder", "0");
+        client.AddAttribute("elevator", "0");
+        client.AddAttribute("throttle", "0");
 
         //Determine size of internal button
         js.setStickSize(200, 200);
@@ -84,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Rudder " + String.valueOf(p);
                 txt_rudder.setText(txt);
+                client.SetAttribute("rudder", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -110,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Throttle " + String.valueOf(p);
                 txt_throttle.setText(txt);
+                client.SetAttribute("throttle", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -135,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Aileron " + String.valueOf(p);
                 txt_aileron.setText(txt);
+                client.SetAttribute("aileron[0]", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -149,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         elevator.incrementProgressBy(1);
         elevator.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
+
             // Show value of the seekbar elevator
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -161,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Elevator " + String.valueOf(p);
                 txt_elevator.setText(txt);
-                // model.setElevator(p);
+                client.SetAttribute("elevator", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -194,15 +205,16 @@ public class MainActivity extends AppCompatActivity {
                     elevator.setProgress((int)value_elevator);
 
                     // Send aileron and elevator to model
-
+                    client.SetAttribute("aileron[0]", (float) value_aileron);
+                    client.SetAttribute("elevator", (float) value_elevator);
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
                     // Everything return to be 0 when the joystick is not touch
                     x.setText("Aileron : 0");
                     y.setText("Elevator : 0");
                     aileron.setProgress(0);
                     elevator.setProgress(0);
-
-
+                    client.SetAttribute("aileron[0]", 0);
+                    client.SetAttribute("elevator", 0);
                 }
                 return true;
             }
@@ -214,9 +226,13 @@ public class MainActivity extends AppCompatActivity {
         String ipInput = ip.getText().toString().trim();
         String portInput = port.getText().toString().trim();
         // pass ip and port
+        String retVal = client.StartFlight(ipInput, portInput);
+
 
         // Show user the connection he is trying to connect to
         String connection = "Connection to IP: " + ipInput + ", port: " + portInput;
+        if (retVal != null)
+            connection += "\n" + retVal;
         Toast.makeText(this, connection, Toast.LENGTH_SHORT).show();
        // Enable connection button after connection
         buttonConnect.setEnabled(false);
@@ -242,3 +258,5 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+
+//OnActivityDestroy -> client.endFlight();
