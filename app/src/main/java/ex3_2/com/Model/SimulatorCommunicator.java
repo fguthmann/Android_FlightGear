@@ -28,6 +28,7 @@ public class SimulatorCommunicator {
     }
     public String StartFlight(String address, String port) {
         try {
+            System.out.println("trying to connect to the Flight Gear.\n");
             StartCommunication(address, port);
         }catch (UnknownHostException e){
             return "IP address not valid.";
@@ -46,6 +47,7 @@ public class SimulatorCommunicator {
         public boolean shouldFly = true;
 
         private void Communicate(PrintWriter writer){
+            System.out.println("Flight Gear connected.\n");
             while (shouldFly){
                 for (String name: map.keySet()) {
                     String s = "set /controls/flight/";
