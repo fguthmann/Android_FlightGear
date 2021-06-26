@@ -102,11 +102,11 @@ public class Joystick {
     public String getAileron() {
         double x = getX();
         if (x >= 300) {
-            return "10";
+            return "1";
         } else if (x <= -300) {
-            return "-10";
+            return "-1";
         } else {
-            x = x / 300 * 10;
+            x = x / 300;
             DecimalFormat df = new DecimalFormat("#.##");
             x = Double.valueOf(df.format(x));
             return String.valueOf(x);
@@ -116,11 +116,11 @@ public class Joystick {
     public String getElevator() {
         double y = getY();
         if (y >= 300) {
-            return "10";
+            return "1";
         } else if (y <= -300) {
-            return "-10";
+            return "-1";
         } else {
-            y = y / 300 * 10;
+            y = y / 300;
             DecimalFormat df = new DecimalFormat("#.##");
             y = Double.valueOf(df.format(y));
             return String.valueOf(y);

@@ -100,9 +100,8 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Throttle between -1 and 1
-        throttle.setMax(200);
-        throttle.setProgress(100);
+        // Throttle between 0 and 1
+        throttle.setMax(100);
         throttle.incrementProgressBy(1);
         throttle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
@@ -111,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
                 double p = (double)progress / 100;
-                p = p - 1;
                 // Keep only two last digits
                 DecimalFormat df = new DecimalFormat("#.##");
                 p = Double.valueOf(df.format(p));
@@ -127,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Aileron between -10 and 10
-        aileron.setMax(2000);
-        aileron.setProgress(1000);
+        // Aileron between -1 and 1
+        aileron.setMax(200);
+        aileron.setProgress(100);
         aileron.incrementProgressBy(1);
         aileron.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             // Show value of the seekbar aileron
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
                 double p = (double)progress / 100;
-                p = p - 10;
+                p = p - 1;
                 // Keep only two last digits
                 DecimalFormat df = new DecimalFormat("#.##");
                 p = Double.valueOf(df.format(p));
@@ -153,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Elevator between -10 and 10
-        elevator.setMax(2000);
-        elevator.setProgress(1000);
+        // Elevator between -1 and 1
+        elevator.setMax(200);
+        elevator.setProgress(100);
         elevator.incrementProgressBy(1);
         elevator.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
@@ -165,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
                 double p = (double)progress / 100;
-                p = p - 10;
+                p = p - 1;
                 // Keep only two last digits
                 DecimalFormat df = new DecimalFormat("#.##");
                 p = Double.valueOf(df.format(p));
@@ -199,9 +197,9 @@ public class MainActivity extends AppCompatActivity {
                     x.setText("Aileron : " + str_aileron);
                     y.setText("Elevator : " + str_elevator);
                     // Put the seekbar of aileron and elevator to the right value
-                    double value_aileron = (Double.parseDouble(str_aileron) + 10) * 100;
+                    double value_aileron = (Double.parseDouble(str_aileron) + 1) * 100;
                     aileron.setProgress((int)value_aileron);
-                    double value_elevator = (Double.parseDouble(str_elevator) + 10) * 100;
+                    double value_elevator = (Double.parseDouble(str_elevator) + 1) * 100;
                     elevator.setProgress((int)value_elevator);
 
                     // Send aileron and elevator to model
@@ -211,8 +209,8 @@ public class MainActivity extends AppCompatActivity {
                     // Everything return to be 0 when the joystick is not touch
                     x.setText("Aileron : 0");
                     y.setText("Elevator : 0");
-                    aileron.setProgress(0);
-                    elevator.setProgress(0);
+                    aileron.setProgress(100);
+                    elevator.setProgress(100);
                     client.SetAttribute("flight/aileron", 0);
                     client.SetAttribute("flight/elevator", 0);
                 }
