@@ -23,7 +23,9 @@ public class SimulatorCommunicator {
     }
     private void StartCommunication(String address, String port)
             throws IOException, UnknownHostException {
+        System.out.println(address + ", " + port + "\n");
         InetAddress adr = InetAddress.getByName(address);
+        System.out.println("Address received.\n");
         client.StartFlight(adr, Integer.parseInt(port));
     }
     public String StartFlight(String address, String port) {
@@ -47,7 +49,7 @@ public class SimulatorCommunicator {
         public boolean shouldFly = true;
 
         private void Communicate(PrintWriter writer){
-            System.out.println("Flight Gear connected.\n");
+            System.out.println("Communication started.\n");
             while (shouldFly){
                 for (String name: map.keySet()) {
                     String s = "set /controls/flight/";
@@ -58,8 +60,11 @@ public class SimulatorCommunicator {
         }
         public void StartFlight(InetAddress address, int port)
                 throws IOException, UnknownHostException {
+            System.out.println("In the inner class.\n");
             Socket s = new Socket(address, port);
+            System.out.println("Socket opened.\n");
             OutputStream output = s.getOutputStream();
+            System.out.println("Output stream opened.\n");
             PrintWriter writer = new PrintWriter(output, true);
             Communicate(writer);
             writer.close();
