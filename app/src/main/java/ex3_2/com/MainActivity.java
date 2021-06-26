@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ex3_2.com.View.Joystick;
 import ex3_2.com.Model.*;
@@ -227,8 +229,9 @@ public class MainActivity extends AppCompatActivity {
 
         Runnable runnable =
                 () -> { client.StartFlight(ipInput, portInput); };
-        Thread thread = new Thread(runnable);
-        thread.start();
+        ExecutorService pool = Executors.newFixedThreadPool(1);
+        pool.execute(runnable);
+
 
         // Show user the connection he is trying to connect to
         String connection = "Connection to IP: " + ipInput + ", port: " + portInput;
