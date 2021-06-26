@@ -26,9 +26,17 @@ public class SimulatorCommunicator {
         System.out.println(address + ", " + port + "\n");
         InetAddress adr = InetAddress.getByName(address);
         System.out.println("Address received.\n");
-        client.StartFlight(adr, Integer.parseInt(port));
+        client.StartFlight(address, Integer.parseInt(port));
     }
     public String StartFlight(String address, String port) {
+        System.out.println("trying to connect to the Flight Gear.\n");
+        System.out.println(address + ", " + port + "\n");
+        Runnable runnable =
+                () -> { client.StartFlight(address, Integer.parseInt(port)); };
+        Thread thread = new Thread(runnable);
+        thread.start();
+
+
         try {
             System.out.println("trying to connect to the Flight Gear.\n");
             StartCommunication(address, port);
@@ -48,31 +56,34 @@ public class SimulatorCommunicator {
         public Map<String, Float> map;
         public boolean shouldFly = true;
 
-        private void Communicate(PrintWriter writer){
+        private void Communicate(PrintWriter writer, OutputStream out){
             System.out.println("Communication started.\n");
             while (shouldFly){
                 for (String name: map.keySet()) {
-                    String s = "set /controls/flight/";
-                    s += name + " " + map.get(name).toString();
+                    String s = "set /controls/" + name + " " + map.get(name).toString();
                     writer.println(s);
                 }
-                writer.close();
             }
+            writer.close();
         }
-        public void StartFlight(InetAddress address, int port)
-                throws IOException, UnknownHostException {
+        public void StartFlight(String address, int port) {
             System.out.println("In the inner class.\n");
-            Socket s = new Socket(address, port);
-            System.out.println("Socket opened.\n");
-            OutputStream output = s.getOutputStream();
-            System.out.println("Output stream opened.\n");
-            PrintWriter writer = new PrintWriter(output, true);
-            Runnable runnable =
-                    () -> { Communicate(writer); };
-            Thread thread = new Thread(runnable);
-            thread.start();
-            output.close();
-            s.close();
+            Socket s;
+            try {
+                s = new Socket(address, port);
+                System.out.println("Socket opened.\n");
+                OutputStream output = s.getOutputStream();
+                System.out.println("Output stream opened.\n");
+                PrintWriter writer = new PrintWriter(output, true);
+                Communicate(writer, output);
+                output.close();
+                s.close();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }
