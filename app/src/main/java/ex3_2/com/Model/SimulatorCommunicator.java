@@ -28,15 +28,13 @@ public class SimulatorCommunicator {
         System.out.println("Address received.\n");
         client.StartFlight(address, Integer.parseInt(port));
     }
-    public String StartFlight(String address, String port) {
+    public void StartFlight(String address, String port) {
         System.out.println("trying to connect to the Flight Gear.\n");
         System.out.println(address + ", " + port + "\n");
-        Runnable runnable =
-                () -> { client.StartFlight(address, Integer.parseInt(port)); };
-        Thread thread = new Thread(runnable);
-        thread.start();
 
+        client.StartFlight(address, Integer.parseInt(port));
 
+        /**
         try {
             System.out.println("trying to connect to the Flight Gear.\n");
             StartCommunication(address, port);
@@ -47,6 +45,7 @@ public class SimulatorCommunicator {
             return "Connection Error.";
         }
         return null;
+         */
     }
     public void endFlight(){
         client.shouldFly = false;
@@ -62,6 +61,11 @@ public class SimulatorCommunicator {
                 for (String name: map.keySet()) {
                     String s = "set /controls/" + name + " " + map.get(name).toString();
                     writer.println(s);
+                }
+                try {
+                    out.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             writer.close();
