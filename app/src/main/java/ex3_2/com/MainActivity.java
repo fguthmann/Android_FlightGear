@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
         y = (TextView)findViewById(R.id.y);
 
         client = new SimulatorCommunicator();
-        client.AddAttribute("aileron[0]", "0");
-        client.AddAttribute("rudder", "0");
-        client.AddAttribute("elevator", "0");
-        client.AddAttribute("throttle", "0");
+        client.AddAttribute("flight/aileron", "0");
+        client.AddAttribute("flight/rudder", "0");
+        client.AddAttribute("flight/elevator", "0");
+        client.AddAttribute("engines/current-engine/throttle", "0");
 
         //Determine size of internal button
         js.setStickSize(200, 200);
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Rudder " + String.valueOf(p);
                 txt_rudder.setText(txt);
-                client.SetAttribute("rudder", (float) p);
+                client.SetAttribute("flight/rudder", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Throttle " + String.valueOf(p);
                 txt_throttle.setText(txt);
-                client.SetAttribute("throttle", (float) p);
+                client.SetAttribute("engines/current-engine/throttle", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Aileron " + String.valueOf(p);
                 txt_aileron.setText(txt);
-                client.SetAttribute("aileron[0]", (float) p);
+                client.SetAttribute("flight/aileron", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Elevator " + String.valueOf(p);
                 txt_elevator.setText(txt);
-                client.SetAttribute("elevator", (float) p);
+                client.SetAttribute("flight/elevator", (float) p);
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
