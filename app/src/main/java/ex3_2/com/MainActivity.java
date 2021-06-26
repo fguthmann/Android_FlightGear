@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         client.AddAttribute("flight/aileron", "0");
         client.AddAttribute("flight/rudder", "0");
         client.AddAttribute("flight/elevator", "0");
-        client.AddAttribute("engines/current-engine/throttle", "0");
+        client.AddAttribute("engines/current-engine/throttle", "0.5");
 
         //Determine size of internal button
         js.setStickSize(200, 200);
@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity {
                     elevator.setProgress((int)value_elevator);
 
                     // Send aileron and elevator to model
-                    client.SetAttribute("aileron[0]", (float) value_aileron);
-                    client.SetAttribute("elevator", (float) value_elevator);
+                    client.SetAttribute("flight/aileron", (float) value_aileron);
+                    client.SetAttribute("flight/elevator", (float) value_elevator);
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
                     // Everything return to be 0 when the joystick is not touch
                     x.setText("Aileron : 0");
