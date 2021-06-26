@@ -213,8 +213,8 @@ public class MainActivity extends AppCompatActivity {
                     y.setText("Elevator : 0");
                     aileron.setProgress(0);
                     elevator.setProgress(0);
-                    client.SetAttribute("aileron[0]", 0);
-                    client.SetAttribute("elevator", 0);
+                    client.SetAttribute("flight/aileron", 0);
+                    client.SetAttribute("flight/elevator", 0);
                 }
                 return true;
             }
@@ -226,13 +226,15 @@ public class MainActivity extends AppCompatActivity {
         String ipInput = ip.getText().toString().trim();
         String portInput = port.getText().toString().trim();
         // pass ip and port
-        String retVal = client.StartFlight(ipInput, portInput);
 
+        Runnable runnable =
+                () -> { client.StartFlight(ipInput, portInput); };
+        Thread thread = new Thread(runnable);
+        thread.start();
 
         // Show user the connection he is trying to connect to
         String connection = "Connection to IP: " + ipInput + ", port: " + portInput;
-        if (retVal != null)
-            connection += "\n" + retVal;
+
         Toast.makeText(this, connection, Toast.LENGTH_SHORT).show();
        // Enable connection button after connection
         buttonConnect.setEnabled(false);
