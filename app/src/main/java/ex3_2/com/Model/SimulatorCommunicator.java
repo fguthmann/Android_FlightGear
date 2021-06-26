@@ -58,10 +58,11 @@ public class SimulatorCommunicator {
         private void Communicate(PrintWriter writer, OutputStream out){
             System.out.println("Communication started.\n");
             while (shouldFly){
+                String s = "";
                 for (String name: map.keySet()) {
-                    String s = "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
-                    writer.print(s);
+                    s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
                 }
+                writer.print(s);
                 try {
                     out.flush();
                 } catch (IOException e) {
