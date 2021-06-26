@@ -56,6 +56,7 @@ public class SimulatorCommunicator {
                     s += name + " " + map.get(name).toString();
                     writer.println(s);
                 }
+                writer.close();
             }
         }
         public void StartFlight(InetAddress address, int port)
@@ -66,8 +67,10 @@ public class SimulatorCommunicator {
             OutputStream output = s.getOutputStream();
             System.out.println("Output stream opened.\n");
             PrintWriter writer = new PrintWriter(output, true);
-            Communicate(writer);
-            writer.close();
+            Runnable runnable =
+                    () -> { Communicate(writer); };
+            Thread thread = new Thread(runnable);
+            thread.start();
             output.close();
             s.close();
         }
