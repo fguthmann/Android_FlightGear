@@ -59,8 +59,8 @@ public class SimulatorCommunicator {
             System.out.println("Communication started.\n");
             while (shouldFly){
                 for (String name: map.keySet()) {
-                    String s = "set /controls/" + name + " " + map.get(name).toString();
-                    writer.println(s);
+                    String s = "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
+                    writer.print(s);
                 }
                 try {
                     out.flush();
