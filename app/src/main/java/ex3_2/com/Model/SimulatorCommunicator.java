@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static java.lang.Thread.sleep;
+
 public class SimulatorCommunicator {
     private Client client;
     public SimulatorCommunicator(){
@@ -23,12 +25,12 @@ public class SimulatorCommunicator {
         System.out.println(address + ", " + port + "\n");
         client.StartFlight(address, Integer.parseInt(port));
     }
-    public void Pause(){
+    public void ChangePause(){
         client.shouldPause = true;
         client.SendCommand("run pause\r\n");
     }
     public void EndFlight(){
-        //end FG command
+        client.SendCommand("run reset\r\n");
         client.shouldFly = false;
         client.shouldPause = true;
     }
@@ -64,11 +66,16 @@ public class SimulatorCommunicator {
                     writer.print(CreateAttributesString());
                     try { out.flush(); }
                     catch (IOException e) { e.printStackTrace(); }
-                    //sleep
+                    try { sleep(100); }
+                    catch (InterruptedException e) { e.printStackTrace(); }
                 }
-                //sleep longer
+                try { sleep(1000); }
+                catch (InterruptedException e) { e.printStackTrace(); }
             }
             writer.close();
+        }
+        private void ErrorMsg(String msg){
+
         }
         public void StartFlight(String address, int port) {
             System.out.println("In the inner class.\n");
