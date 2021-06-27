@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Make the value decimal and negative
+
                 double p = (double)progress / 100;
                 p = p - 1;
                 // Keep only two last digits
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 String txt = "Rudder " + String.valueOf(p);
                 txt_rudder.setText(txt);
                 double finalP = p;
+
                 executor.execute( ()->client.setRudder((float) finalP));
             }
             @Override
@@ -224,9 +226,11 @@ public class MainActivity extends AppCompatActivity {
                     elevator.setProgress((int)value_elevator);
 
                     // Send aileron and elevator to model
-                    double finalValueAileron = value_aileron;
+                    double finalValueAileron = Double.parseDouble(str_aileron);
+                    System.out.print(value_aileron);
+                    System.out.print(finalValueAileron);
                     executor.execute( ()->client.setAileron((float) finalValueAileron));
-                    double finalValueElevator = value_elevator;
+                    double finalValueElevator = Double.parseDouble(str_elevator);
                     executor.execute( ()->client.setElevator((float) finalValueElevator));
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
                     // Everything return to be 0 when the joystick is not touch

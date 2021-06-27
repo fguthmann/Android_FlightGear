@@ -80,6 +80,7 @@ public class SimulatorCommunicator {
         }
         public void SendMsg(String cmd){
             writer.print(cmd);
+            System.out.print(cmd);
             try { out.flush(); }
             catch (IOException e) { e.printStackTrace(); }
         }
