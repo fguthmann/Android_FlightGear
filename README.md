@@ -9,12 +9,12 @@ The project is built in MVVM architecture in which: the model is the presentatio
 # Folder structure links
 (AnomalyDetectionWebService shortcut is ADWS)
  * AFG/      Root folder
- * [AFG/app/src/main/java/ex3_2/com/](Android_FlightGear/app/src/main/java/ex3_2/com/)  Source files of the application.
-* [AFG/app/src/main/java/ex3_2/com/View/](Android_FlightGear/app/src/main/java/ex3_2/com/View/)  Source files of the view which contain the joystick.
-* [AFG/app/src/main/java/ex3_2/com/Model/](Android_FlightGear/app/src/main/java/ex3_2/com/Model/)  Source files of all logical management- the connection to the FG.
-* [AFG/app/src/main/java/ex3_2/com/VM/](Android_FlightGear/app/src/main/java/ex3_2/com/VM/)  Contain the main activity- which s the bridge between receiving the commands from the user and sending them to the FG.
-* [AFG/.idea/](Android_FlightGear/.idea/)  Contains setting for the environment and the app.
-* [AFG/gradle/wrapper/](Android_FlightGear/gradle/wrapper/)  Contains setting for the environment and the app.
+ * [AFG/app/src/main/java/ex3_2/com/](app/src/main/java/ex3_2/com/)  Source files of the application.
+* [AFG/app/src/main/java/ex3_2/com/View/](app/src/main/java/ex3_2/com/View/)  Source files of the view which contain the joystick.
+* [AFG/app/src/main/java/ex3_2/com/Model/](app/src/main/java/ex3_2/com/Model/)  Source files of all logical management- the connection to the FG.
+* [AFG/app/src/main/java/ex3_2/com/VM/](app/src/main/java/ex3_2/com/VM/)  Contain the main activity- which s the bridge between receiving the commands from the user and sending them to the FG.
+* [AFG/.idea/](.idea/)  Contains setting for the environment and the app.
+* [AFG/gradle/wrapper/](gradle/wrapper/)  Contains setting for the environment and the app.
 
 
 # Pre requirements
