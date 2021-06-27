@@ -3,7 +3,6 @@ package ex3_2.com.Model;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
@@ -18,70 +17,69 @@ public class SimulatorCommunicator {
     public void AddAttribute(String name, String initialValue){
         client.map.put(name, Float.valueOf(initialValue).floatValue());
     }
-    public void SetAttribute(String theAttribute, float value){
-        client.map.put(theAttribute, Float.valueOf(value).floatValue());
-    }
-    private void StartCommunication(String address, String port)
-            throws IOException, UnknownHostException {
-        System.out.println(address + ", " + port + "\n");
-        InetAddress adr = InetAddress.getByName(address);
-        System.out.println("Address received.\n");
-        client.StartFlight(address, Integer.parseInt(port));
-    }
+    public void SetAttribute(String attr, float value){ client.map.put(attr, value); }
     public void StartFlight(String address, String port) {
         System.out.println("trying to connect to the Flight Gear.\n");
         System.out.println(address + ", " + port + "\n");
-
         client.StartFlight(address, Integer.parseInt(port));
-
-        /**
-        try {
-            System.out.println("trying to connect to the Flight Gear.\n");
-            StartCommunication(address, port);
-        }catch (UnknownHostException e){
-            return "IP address not valid.";
-        }
-        catch (IOException e){
-            return "Connection Error.";
-        }
-        return null;
-         */
     }
-    public void endFlight(){
+    public void Pause(){
+        client.shouldPause = true;
+        client.SendCommand("run pause\r\n");
+    }
+    public void EndFlight(){
+        //end FG command
         client.shouldFly = false;
+        client.shouldPause = true;
     }
 
     private class Client{
         public Map<String, Float> map;
         public boolean shouldFly = true;
+        public boolean shouldPause = false;
+        private PrintWriter writer;
+        private OutputStream out;
 
-        private void Communicate(PrintWriter writer, OutputStream out){
+        public void SendCommand(String cmd){
+            writer.print(cmd + "\r\n");
+            try {
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String CreateAttributesString(){
+            String s = "";
+            for (String name : map.keySet()) {
+                s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
+            }
+            return s;
+        }
+
+        private void Communicate(){
             System.out.println("Communication started.\n");
             while (shouldFly){
-                String s = "";
-                for (String name: map.keySet()) {
-                    s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
+                while (!shouldPause) {
+                    writer.print(CreateAttributesString());
+                    try { out.flush(); }
+                    catch (IOException e) { e.printStackTrace(); }
+                    //sleep
                 }
-                writer.print(s);
-                try {
-                    out.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                //sleep longer
             }
             writer.close();
         }
         public void StartFlight(String address, int port) {
             System.out.println("In the inner class.\n");
-            Socket s;
             try {
-                s = new Socket(address, port);
+                Socket s = new Socket(address, port);
                 System.out.println("Socket opened.\n");
-                OutputStream output = s.getOutputStream();
+                this.out = s.getOutputStream();
                 System.out.println("Output stream opened.\n");
-                PrintWriter writer = new PrintWriter(output, true);
-                Communicate(writer, output);
-                output.close();
+                this.writer = new PrintWriter(out, true);
+                Communicate();
+                out.close();
                 s.close();
             } catch (UnknownHostException e) {
                 e.printStackTrace();
