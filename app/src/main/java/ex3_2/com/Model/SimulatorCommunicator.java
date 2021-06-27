@@ -11,93 +11,86 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static java.lang.Thread.sleep;
 
 public class SimulatorCommunicator {
     private Client client;
-    public SimulatorCommunicator(){
-        client = new Client();
-        client.map = new LinkedHashMap<>();
+    private final String aileron = "set /controls/flight/aileron ";
+    private final String elevator = "set /controls/flight/elevator ";
+    private final String rudder = "set /controls/flight/rudder ";
+    private final String throttle = "set /controls/engines/current-engine/throttle ";
+
+    public void setAileron(float f){
+        client.SendMsg(aileron + Float.toString(f) + "\r\n");
     }
-    public void AddAttribute(String name, String initialValue){
-        client.map.put(name, Float.valueOf(initialValue).floatValue());
+    public void setElevator(float f){
+        client.SendMsg(elevator + Float.toString(f) + "\r\n");
     }
-    public void SetAttribute(String attr, float value){ client.map.put(attr, value); }
-    public void StartFlight(String address, String port) {
+    public void setRudder(float f){
+        client.SendMsg(rudder + Float.toString(f) + "\r\n");
+    }
+    public void setThrottle(float f){
+        client.SendMsg(throttle + Float.toString(f) + "\r\n");
+    }
+
+    public String StartFlight(String address, String port) {
         System.out.println("trying to connect to the Flight Gear.\n");
         System.out.println(address + ", " + port + "\n");
-        client.StartFlight(address, Integer.parseInt(port));
+        String s = "Connection to IP: " + address + ", port: " + port;
+
+        client = new Client();
+        try { client.SetConnection(address, Integer.parseInt(port)); }
+        catch (IOException e) {
+            return s + "\nConnection Failed.";
+        }
+        return s;
     }
     public void ChangePause(){
-        //client.shouldPause = true;
-        if (client.flight_started)
-            client.SendMsg("run pause\r\n");
+        client.SendMsg("run pause\r\n");
     }
     public void EndFlight(){
         //end FG command
-        client.shouldFly = false;
-        client.shouldPause = true;
+        try {
+            client.Close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+
+
+
     private class Client{
-        public Map<String, Float> map;
-        public boolean shouldFly = true;
-        public boolean shouldPause = false;
-        public boolean flight_started = false;
         private PrintWriter writer;
         private OutputStream out;
+        Socket socket;
 
+        public void SetConnection(String address, int port) throws IOException{
+            socket = new Socket(address, port);
+            System.out.println("Socket opened.\n");
+            this.out = socket.getOutputStream();
+            System.out.println("Output stream opened.\n");
+            this.writer = new PrintWriter(out, true);
+        }
         public void SendMsg(String cmd){
             writer.print(cmd);
             try { out.flush(); }
             catch (IOException e) { e.printStackTrace(); }
         }
-
-        private String CreateAttributesString(){
-            String s = "";
-            for (String name : map.keySet()) {
-                s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
-            }
-            return s;
-        }
-
-        private void Communicate(){
-            System.out.println("Communication started.\n");
-            while (shouldFly){
-                while (!shouldPause) {
-                    SendMsg(CreateAttributesString());
-                    try { sleep(100); }
-                    catch (InterruptedException e) { e.printStackTrace(); }
-                }
-                try { sleep(1000); }
-                catch (InterruptedException e) { e.printStackTrace(); }
-            }
+        public void Close() throws IOException {
             writer.close();
+            out.close();
+            socket.close();
         }
-        private void ErrorMsg(String msg){
-
-        }
-        public void StartFlight(String address, int port) {
-            System.out.println("In the inner class.\n");
-            try {
-                Socket s = new Socket(address, port);
-                System.out.println("Socket opened.\n");
-                this.out = s.getOutputStream();
-                System.out.println("Output stream opened.\n");
-                this.writer = new PrintWriter(out, true);
-                client.flight_started = true;
-                Communicate();
-                out.close();
-                s.close();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }private class UDPClient{
+    }
+    /**
+     private class UDPClient{
         public Map<String, Float> map;
         public boolean shouldFly = true;
         public boolean shouldPause = false;
@@ -151,4 +144,26 @@ public class SimulatorCommunicator {
 
         }
     }
+
+     private String CreateAttributesString(){
+     String s = "";
+     for (String name : map.keySet()) {
+     s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
+     }
+     return s;
+     }
+
+     private void Communicate(){
+     System.out.println("Communication started.\n");
+     while (shouldFly){
+     while (!shouldPause) {
+     SendMsg(CreateAttributesString());
+     try { sleep(100); }
+     catch (InterruptedException e) { e.printStackTrace(); }
+     }
+     try { sleep(1000); }
+     catch (InterruptedException e) { e.printStackTrace(); }
+     }
+     }
+    */
 }
