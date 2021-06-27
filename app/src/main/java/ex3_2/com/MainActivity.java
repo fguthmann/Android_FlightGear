@@ -1,6 +1,9 @@
 package ex3_2.com;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,15 +12,16 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import ex3_2.com.View.Joystick;
 import ex3_2.com.Model.*;
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonConnect;
     Joystick js;
     SimulatorCommunicator client;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.print("On create entered\n");
@@ -56,10 +61,7 @@ public class MainActivity extends AppCompatActivity {
         y = (TextView) findViewById(R.id.y);
         // Initialization of the map info
         client = new SimulatorCommunicator();
-        client.AddAttribute("flight/aileron", "0");
-        client.AddAttribute("flight/rudder", "0");
-        client.AddAttribute("flight/elevator", "0");
-        client.AddAttribute("engines/current-engine/throttle", "0.5");
+
     }
 
     protected void onStart() {
@@ -117,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Rudder " + String.valueOf(p);
                 txt_rudder.setText(txt);
-                client.SetAttribute("flight/rudder", (float) p);
+                double finalP = p;
+                executor.execute( ()->client.setRudder((float) finalP));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -140,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Throttle " + String.valueOf(p);
                 txt_throttle.setText(txt);
-                client.SetAttribute("engines/current-engine/throttle", (float) p);
+                double finalP = p;
+                executor.execute( ()->client.setThrottle((float) finalP));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -162,7 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Aileron " + String.valueOf(p);
                 txt_aileron.setText(txt);
-                client.SetAttribute("flight/aileron", (float) p);
+                double finalP = p;
+                executor.execute( ()->client.setAileron((float) finalP));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -186,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                 // Instead of showing send to model
                 String txt = "Elevator " + String.valueOf(p);
                 txt_elevator.setText(txt);
-                client.SetAttribute("flight/elevator", (float) p);
+                double finalP = p;
+                executor.execute( ()->client.setElevator((float) finalP));
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -218,16 +224,18 @@ public class MainActivity extends AppCompatActivity {
                     elevator.setProgress((int)value_elevator);
 
                     // Send aileron and elevator to model
-                    client.SetAttribute("flight/aileron", (float) value_aileron);
-                    client.SetAttribute("flight/elevator", (float) value_elevator);
+                    double finalValueAileron = value_aileron;
+                    executor.execute( ()->client.setAileron((float) finalValueAileron));
+                    double finalValueElevator = value_elevator;
+                    executor.execute( ()->client.setElevator((float) finalValueElevator));
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
                     // Everything return to be 0 when the joystick is not touch
                     x.setText("Aileron : 0");
                     y.setText("Elevator : 0");
                     aileron.setProgress(100);
                     elevator.setProgress(100);
-                    client.SetAttribute("flight/aileron", 0);
-                    client.SetAttribute("flight/elevator", 0);
+                    executor.execute( ()->client.setAileron(0));
+                    executor.execute( ()->client.setElevator(0));
                 }
                 return true;
             }
@@ -256,21 +264,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Connect button has been click, and ip and port are send
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void clickConnect(View view) {
         String ipInput = ip.getText().toString().trim();
         String portInput = port.getText().toString().trim();
-        // pass ip and port
 
+/**
         Runnable runnable =
                 () -> { client.StartFlight(ipInput, portInput); };
         ExecutorService pool = Executors.newFixedThreadPool(1);
         pool.execute(runnable);
-
-
+*/
+        // pass ip and port
+        Future<String> s = executor.submit( ()-> client.StartFlight(ipInput, portInput));
         // Show user the connection he is trying to connect to
-        String connection = "Connection to IP: " + ipInput + ", port: " + portInput;
-
-        Toast.makeText(this, connection, Toast.LENGTH_SHORT).show();
+        try { Toast.makeText(this, s.get(), Toast.LENGTH_SHORT).show(); }
+        catch (ExecutionException e) { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+/**
+        CompletableFuture.supplyAsync( ()->{return client.StartFlight(ipInput, portInput);})
+                .thenAccept(s->Toast.makeText(this, s, Toast.LENGTH_SHORT).show());
+*/
        // Enable connection button after connection
         buttonConnect.setEnabled(false);
     }
