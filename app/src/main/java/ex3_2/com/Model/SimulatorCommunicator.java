@@ -13,16 +13,20 @@ public class SimulatorCommunicator {
     private final String throttle = "set /controls/engines/current-engine/throttle ";
 
     public void setAileron(float f){
-        client.SendMsg(aileron + Float.toString(f) + "\r\n");
+        if (client.socket != null)
+            client.SendMsg(aileron + Float.toString(f) + "\r\n");
     }
     public void setElevator(float f){
-        client.SendMsg(elevator + Float.toString(f) + "\r\n");
+        if (client.socket != null)
+            client.SendMsg(elevator + Float.toString(f) + "\r\n");
     }
     public void setRudder(float f){
-        client.SendMsg(rudder + Float.toString(f) + "\r\n");
+        if (client.socket != null)
+            client.SendMsg(rudder + Float.toString(f) + "\r\n");
     }
     public void setThrottle(float f){
-        client.SendMsg(throttle + Float.toString(f) + "\r\n");
+        if (client.socket != null)
+            client.SendMsg(throttle + Float.toString(f) + "\r\n");
     }
 
     public String StartFlight(String address, String port) {
@@ -30,7 +34,7 @@ public class SimulatorCommunicator {
         System.out.println(address + ", " + port + "\n");
         String s = "Connection to IP: " + address + ", port: " + port;
         client = new Client();
-        try { client.SetConnection(address, Integer.parseInt(port)); }
+        try { client.ConnectToFG(address, Integer.parseInt(port)); }
         catch (IOException e) {
             return s + "\nConnection Failed.";
         }
@@ -47,9 +51,9 @@ public class SimulatorCommunicator {
 
     private class Client{
         private PrintWriter writer;
-        Socket socket;
+        public Socket socket;
 
-        public void SetConnection(String address, int port) throws IOException{
+        public void ConnectToFG(String address, int port) throws IOException{
             socket = new Socket(address, port);
             System.out.println("Socket opened.\n");
             this.writer = new PrintWriter(socket.getOutputStream(), true);
