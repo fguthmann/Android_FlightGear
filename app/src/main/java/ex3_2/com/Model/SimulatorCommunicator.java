@@ -44,7 +44,7 @@ public class SimulatorCommunicator {
         client.SendMsg("run pause\r\n");
     }
     public void EndFlight(){
-        //end FG command
+        client.SendMsg("quit\r\n");
         try { client.Close(); }
         catch (IOException e) { e.printStackTrace(); }
     }
