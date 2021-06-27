@@ -15,9 +15,9 @@ import java.util.Map;
 import static java.lang.Thread.sleep;
 
 public class SimulatorCommunicator {
-    private UDPClient client;
+    private Client client;
     public SimulatorCommunicator(){
-        client = new UDPClient();
+        client = new Client();
         client.map = new LinkedHashMap<>();
     }
     public void AddAttribute(String name, String initialValue){
@@ -30,8 +30,9 @@ public class SimulatorCommunicator {
         client.StartFlight(address, Integer.parseInt(port));
     }
     public void ChangePause(){
-        client.shouldPause = true;
-        client.SendMsg("run pause\r\n");
+        //client.shouldPause = true;
+        if (client.flight_started)
+            client.SendMsg("run pause\r\n");
     }
     public void EndFlight(){
         //end FG command
@@ -43,6 +44,7 @@ public class SimulatorCommunicator {
         public Map<String, Float> map;
         public boolean shouldFly = true;
         public boolean shouldPause = false;
+        public boolean flight_started = false;
         private PrintWriter writer;
         private OutputStream out;
 
@@ -84,6 +86,7 @@ public class SimulatorCommunicator {
                 this.out = s.getOutputStream();
                 System.out.println("Output stream opened.\n");
                 this.writer = new PrintWriter(out, true);
+                client.flight_started = true;
                 Communicate();
                 out.close();
                 s.close();

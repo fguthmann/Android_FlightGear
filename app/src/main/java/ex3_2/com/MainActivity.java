@@ -33,32 +33,38 @@ public class MainActivity extends AppCompatActivity {
     SimulatorCommunicator client;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.print("On create entered\n");
         setContentView(R.layout.activity_main);
         // Initialization of sliders and their name
-        rudder=(SeekBar)findViewById(R.id.Rudder);
-        txt_rudder = (TextView)findViewById(R.id.textRudder);
-        aileron=(SeekBar)findViewById(R.id.Aileron);
-        txt_aileron = (TextView)findViewById(R.id.textAileron);
-        elevator=(SeekBar)findViewById(R.id.Elevator);
-        txt_elevator = (TextView)findViewById(R.id.textElevator);
-        throttle=(SeekBar)findViewById(R.id.Throttle);
-        txt_throttle = (TextView)findViewById(R.id.textThrottle);
+        rudder = (SeekBar) findViewById(R.id.Rudder);
+        txt_rudder = (TextView) findViewById(R.id.textRudder);
+        aileron = (SeekBar) findViewById(R.id.Aileron);
+        txt_aileron = (TextView) findViewById(R.id.textAileron);
+        elevator = (SeekBar) findViewById(R.id.Elevator);
+        txt_elevator = (TextView) findViewById(R.id.textElevator);
+        throttle = (SeekBar) findViewById(R.id.Throttle);
+        txt_throttle = (TextView) findViewById(R.id.textThrottle);
         // Initialization of ip and port and button connect
-        ip = (EditText)findViewById(R.id.IP);
-        port = (EditText)findViewById(R.id.Port);
-        buttonConnect =(Button)findViewById(R.id.Connect);
+        ip = (EditText) findViewById(R.id.IP);
+        port = (EditText) findViewById(R.id.Port);
+        buttonConnect = (Button) findViewById(R.id.Connect);
         // Initialization joystick
-        layout_joystick = (RelativeLayout)findViewById(R.id.layout_joystick);
+        layout_joystick = (RelativeLayout) findViewById(R.id.layout_joystick);
         js = new Joystick(getApplicationContext(), layout_joystick, R.drawable.image_button);
         // Show value of aileron and elevator when joystick moved
-        x = (TextView)findViewById(R.id.x);
-        y = (TextView)findViewById(R.id.y);
-
+        x = (TextView) findViewById(R.id.x);
+        y = (TextView) findViewById(R.id.y);
+        // Initialization of the map info
         client = new SimulatorCommunicator();
         client.AddAttribute("flight/aileron", "0");
         client.AddAttribute("flight/rudder", "0");
         client.AddAttribute("flight/elevator", "0");
         client.AddAttribute("engines/current-engine/throttle", "0.5");
+    }
+
+    protected void onStart() {
+        super.onStart();
+        System.out.print("On start entered\n");
 
         //Determine size of internal button
         js.setStickSize(200, 200);
@@ -73,12 +79,30 @@ public class MainActivity extends AppCompatActivity {
         ip.addTextChangedListener(textWatcher);
         port.addTextChangedListener(textWatcher);
 
-
-
         // Rudder between -1 and 1
         rudder.setMax(200);
         rudder.setProgress(100);
         rudder.incrementProgressBy(1);
+
+        // Throttle between 0 and 1
+        throttle.setMax(100);
+        throttle.incrementProgressBy(1);
+
+        // Aileron between -1 and 1
+        aileron.setMax(200);
+        aileron.setProgress(100);
+        aileron.incrementProgressBy(1);
+
+        // Elevator between -1 and 1
+        elevator.setMax(200);
+        elevator.setProgress(100);
+        elevator.incrementProgressBy(1);
+    }
+
+    public void onResume() {
+        super.onResume();
+        System.out.print("On resume entered\n");
+
         rudder.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             // Show value of the seekbar rudder
@@ -102,9 +126,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Throttle between 0 and 1
-        throttle.setMax(100);
-        throttle.incrementProgressBy(1);
+
         throttle.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             // Show value of the seekbar throttle
@@ -127,10 +149,6 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Aileron between -1 and 1
-        aileron.setMax(200);
-        aileron.setProgress(100);
-        aileron.incrementProgressBy(1);
         aileron.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             // Show value of the seekbar aileron
             @Override
@@ -153,10 +171,6 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        // Elevator between -1 and 1
-        elevator.setMax(200);
-        elevator.setProgress(100);
-        elevator.incrementProgressBy(1);
         elevator.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
 
@@ -181,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-
 
         //Joystick
         // Sensitive to when the user put is finger on the joystick
@@ -219,7 +232,28 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
+
+    public void onPause() {
+        super.onPause();
+        System.out.print("On pause entered\n");
+
+        client.ChangePause();
+    }
+
+    public void onStop() {
+        super.onStop();
+        System.out.print("On pause entered\n");
+        client.EndFlight();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        System.out.print("On destroy entered\n");
+        client.EndFlight();
+    }
+
 
     // Connect button has been click, and ip and port are send
     public void clickConnect(View view) {
@@ -262,4 +296,3 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
-//OnActivityDestroy -> client.endFlight();
