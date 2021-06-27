@@ -1,4 +1,4 @@
-# First android app
+# Flight Gear Android App
 
 Flight Controller Android App, ex3, Advanced Programming 2, biu
 
@@ -7,7 +7,7 @@ An android application for controlling flight as a remote control using the Flig
 The project is built in MVVM architecture in which: the model is the presentation of the app in screen, the VM is the main activity and the model is the client that connect to the FG.
 
 # Folder structure links
-(AnomalyDetectionWebService shortcut is ADWS)
+(Android_FlightGear shortcut is AFG)
  * AFG/      Root folder
  * [AFG/app/src/main/java/ex3_2/com/](app/src/main/java/ex3_2/com/)  Source files of the application.
 * [AFG/app/src/main/java/ex3_2/com/View/](app/src/main/java/ex3_2/com/View/)  Source files of the view which contain the joystick.
