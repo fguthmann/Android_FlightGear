@@ -3,7 +3,11 @@ package ex3_2.com.Model;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,9 +15,9 @@ import java.util.Map;
 import static java.lang.Thread.sleep;
 
 public class SimulatorCommunicator {
-    private Client client;
+    private UDPClient client;
     public SimulatorCommunicator(){
-        client = new Client();
+        client = new UDPClient();
         client.map = new LinkedHashMap<>();
     }
     public void AddAttribute(String name, String initialValue){
@@ -27,10 +31,10 @@ public class SimulatorCommunicator {
     }
     public void ChangePause(){
         client.shouldPause = true;
-        client.SendCommand("run pause\r\n");
+        client.SendMsg("run pause\r\n");
     }
     public void EndFlight(){
-        client.SendCommand("run reset\r\n");
+        //end FG command
         client.shouldFly = false;
         client.shouldPause = true;
     }
@@ -42,13 +46,10 @@ public class SimulatorCommunicator {
         private PrintWriter writer;
         private OutputStream out;
 
-        public void SendCommand(String cmd){
-            writer.print(cmd + "\r\n");
-            try {
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        public void SendMsg(String cmd){
+            writer.print(cmd);
+            try { out.flush(); }
+            catch (IOException e) { e.printStackTrace(); }
         }
 
         private String CreateAttributesString(){
@@ -63,9 +64,7 @@ public class SimulatorCommunicator {
             System.out.println("Communication started.\n");
             while (shouldFly){
                 while (!shouldPause) {
-                    writer.print(CreateAttributesString());
-                    try { out.flush(); }
-                    catch (IOException e) { e.printStackTrace(); }
+                    SendMsg(CreateAttributesString());
                     try { sleep(100); }
                     catch (InterruptedException e) { e.printStackTrace(); }
                 }
@@ -91,6 +90,59 @@ public class SimulatorCommunicator {
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }private class UDPClient{
+        public Map<String, Float> map;
+        public boolean shouldFly = true;
+        public boolean shouldPause = false;
+        private DatagramSocket socket;
+        private InetAddress address;
+        private int port;
+        private byte[] buf;
+
+
+        private void SendMsg(String msg){
+            buf = msg.getBytes();
+            DatagramPacket packet
+                    = new DatagramPacket(buf, buf.length, address, 4445);
+            try { socket.send(packet); }
+            catch (IOException e) { e.printStackTrace(); }
+        }
+
+        private String CreateAttributesString(){
+            String s = "";
+            for (String name : map.keySet()) {
+                s += "set /controls/" + name + " " + map.get(name).toString() + "\r\n";
+            }
+            return s;
+        }
+
+        private void Communicate(){
+            System.out.println("Communication started.\n");
+            while (shouldFly){
+                while (!shouldPause) {
+                    SendMsg(CreateAttributesString());
+                }
+                try { sleep(1000); }
+                catch (InterruptedException e) { e.printStackTrace(); }
+            }
+            socket.close();
+        }
+
+        public void StartFlight(String address, int port) {
+            System.out.println("In the inner class.\n");
+            try { this.address = InetAddress.getByName(address); }
+            catch (UnknownHostException e) { e.printStackTrace(); }
+            this.port = port;
+            try {
+                this.socket = new DatagramSocket();
+                System.out.println("Socket opened.\n");
+                System.out.println("Output stream opened.\n");
+                Communicate();
+            } catch (SocketException e) {
                 e.printStackTrace();
             }
 
