@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Joystick js;
     SimulatorCommunicator client;
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    boolean firstTime = true;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.print("On create entered\n");
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onResume() {
         super.onResume();
+        if (!firstTime)
+            executor.execute( ()->client.ChangePause());
+        firstTime = false;
         System.out.print("On resume entered\n");
 
         rudder.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
@@ -246,20 +250,19 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         System.out.print("On pause entered\n");
-
-        client.ChangePause();
+        executor.execute( ()->client.ChangePause());
     }
 
     public void onStop() {
         super.onStop();
-        System.out.print("On pause entered\n");
-        client.EndFlight();
+        System.out.print("On stop entered\n");
+        executor.execute( ()->client.EndFlight());
     }
 
     public void onDestroy() {
         super.onDestroy();
         System.out.print("On destroy entered\n");
-        client.EndFlight();
+        executor.execute( ()->client.EndFlight());
     }
 
 
